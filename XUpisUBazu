@@ -1,0 +1,38 @@
+private void bUpis_Click(object sender, EventArgs e)
+        {
+            bool proslo = false;
+            if (tbSifra.Text != "" && tbNaziv.Text != "")
+            {
+                cmd = new OleDbCommand("INSERT INTO BOJA (BojaID, Naziv, Opis) values (@BojaID, @Naziv, @Opis)", con);
+                cmd.Parameters.Add("@BojaID", OleDbType.Numeric).Value = Int32.Parse(tbSifra.Text);
+                cmd.Parameters.Add("@Naziv", OleDbType.VarChar).Value = tbNaziv.Text;
+                if (tbOpis.Text == "")
+                    cmd.Parameters.Add("@OpisID", OleDbType.VarChar).Value = DBNull.Value;
+                else
+                    cmd.Parameters.Add("@OpisID", OleDbType.VarChar).Value = tbOpis.Text;
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Uspesan upis!", "Obavestenje", MessageBoxButtons.OK);
+                    proslo = true;
+                }
+                catch
+                {
+                    MessageBox.Show("Doslo je do greske pri upisivanju u bazu!", "Greska", MessageBoxButtons.OK);
+                }
+                con.Close();
+                if (proslo)
+                {
+                    listView1.Items.Clear();
+                    PopuniLV();
+                }
+                tbNaziv.Text = "";
+                tbSifra.Text = "";
+                tbOpis.Text = "";
+            }
+            else
+                MessageBox.Show("Popunite sva obavezna polja!", "Greska", MessageBoxButtons.OK);
+
+
+        }
