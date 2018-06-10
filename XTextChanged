@@ -1,0 +1,46 @@
+private void tbSifra_TextChanged(object sender, EventArgs e)
+        {
+            if (tbSifra.Text != "")
+            {
+                bool ima = false;
+                int id = Int32.Parse(tbSifra.Text);
+                cmd = new OleDbCommand("SELECT * FROM BOJA", con);
+                con.Open();
+                rider = cmd.ExecuteReader();
+                while (rider.Read())
+                {
+                    if (id == Int32.Parse(rider[0].ToString()))
+                    {
+                        ima = true;
+                        break;
+                    }
+                }
+                if (ima)
+                {
+                    tbNaziv.Text = rider[1].ToString();
+                    tbOpis.Text = rider[2].ToString();
+                    bIzmena.Enabled = true;
+                    bUpis.Enabled = false;
+                    bBrisi.Enabled = true;
+                }
+                else
+                {
+                    tbNaziv.Text = "";
+                    tbOpis.Text = "";
+                    bIzmena.Enabled = false;
+                    bUpis.Enabled = true;
+                    bBrisi.Enabled = false;
+                }
+
+                con.Close();
+
+            }
+            else
+            {
+                tbNaziv.Text = "";
+                tbOpis.Text = "";
+                bIzmena.Enabled = false;
+                bUpis.Enabled = false;
+                bBrisi.Enabled = false;
+            }
+        }
