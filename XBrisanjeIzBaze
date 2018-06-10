@@ -1,0 +1,26 @@
+private void bBrisi_Click(object sender, EventArgs e)
+        {
+            bool proslo = false;
+            int id = Int32.Parse(tbSifra.Text);
+            cmd = new OleDbCommand("DELETE FROM BOJA WHERE BojaID=" + id + ";", con);
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Uspesno brisanje!", "Obavestenje", MessageBoxButtons.OK);
+                proslo = true;
+            }
+            catch
+            {
+                MessageBox.Show("Doslo je do greske pri brisanju iz baze!", "Greska", MessageBoxButtons.OK);
+            }
+            con.Close();
+            if (proslo)
+            {
+                listView1.Items.Clear();
+                PopuniLV();
+            }
+            tbNaziv.Text = "";
+            tbSifra.Text = "";
+            tbOpis.Text = "";
+        }
