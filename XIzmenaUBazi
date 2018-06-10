@@ -1,0 +1,42 @@
+private void bIzmena_Click(object sender, EventArgs e)
+        {
+            bool proslo=false;
+            if (tbNaziv.Text == "")
+            {
+                MessageBox.Show("Naziv je obavezno polje!", "Obavestenje");
+            }
+            else
+            {
+                cmd = new OleDbCommand("UPDATE BOJA SET Naziv=@Naziv, Opis=@Opis WHERE BojaID=" + Int32.Parse(tbSifra.Text), con);
+                    cmd.Parameters.Add("@Naziv", OleDbType.VarChar).Value = tbNaziv.Text;
+                if (tbOpis.Text != "")
+                    cmd.Parameters.Add("@Opis", OleDbType.VarChar).Value = tbOpis.Text;
+
+                else
+                    cmd.Parameters.Add("@Opis", OleDbType.VarChar).Value = DBNull.Value;
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Uspesna izmena!", "Obavestenje", MessageBoxButtons.OK);
+                    proslo = true;
+                }
+                catch
+                {
+                    MessageBox.Show("Doslo je do greske pri izmeni podataka!", "Greska", MessageBoxButtons.OK);
+                }
+                finally
+                {
+                    con.Close();
+                    if (proslo)
+                    {
+                        listView1.Items.Clear();
+                        PopuniLV();
+                    }
+                    tbNaziv.Text = "";
+                    tbSifra.Text = "";
+                    tbOpis.Text = "";
+                }
+            }
+
+        }
