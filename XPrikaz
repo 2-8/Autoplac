@@ -1,0 +1,128 @@
+private void bPrikaz_Click(object sender, EventArgs e)
+        {
+            int koliko = 0;
+            int god1, god2=0;
+            int model;
+            int boja;
+            int gorivo;
+            string[] godina = new string[4];
+            godina = tbGodina.Text.Split(' ');
+            switch(tbGodina.Text)
+            {
+                case "posle 2015": case "pre 1990": case "2010 - 2014": case "2005 - 2009": case "2000 - 2004": case "1995 – 1999": case "1990 – 1991":
+                    godina = tbGodina.Text.Split(' ');
+                    break;
+                default: MessageBox.Show("Godina nije u ispravnom formatu!", "Greska!");
+                    tbGodina.Text = "";
+                    return;
+            }
+            try
+            {
+                god1 = Int32.Parse(godina[0]);
+                god2 = Int32.Parse(godina[2]);
+                koliko = 2;
+            }
+            catch
+            {
+                try
+                {
+                    god1 = Int32.Parse(godina[1]);
+                    if (god1 == 2015)
+                        godina[1] = '>' + godina[1];
+                    if (god1 == 1990)
+                        godina[1] = '<' + godina[1];
+                    koliko = 3;
+                }
+                catch
+                {
+                    MessageBox.Show("Neispravan unos godine!", "Greska!");
+                    tbGodina.Text = "";
+                    return;
+                }
+            }
+            
+            dataGridView1.Rows.Clear();
+
+
+            cmd = new OleDbCommand("SELECT ModelID FROM MODEL WHERE Naziv='" + tbModel.Text+"'", con);
+            con.Open();
+            rider = cmd.ExecuteReader();
+            rider.Read();
+            try
+            {
+                model = Int32.Parse(rider[0].ToString());
+            }
+            catch
+            {
+                MessageBox.Show("Ovaj model ne postoji u bazi!", "Greska!");
+                tbModel.Text = "";
+                con.Close();
+                return;
+            }
+            con.Close();
+            cmd = new OleDbCommand("SELECT BojaID FROM BOJA WHERE Naziv='" + tbBoja.Text + "'", con);
+            con.Open();
+            rider = cmd.ExecuteReader();
+            rider.Read();
+            try
+            {
+                boja = Int32.Parse(rider[0].ToString());
+            }
+            catch
+            {
+                MessageBox.Show("Ova boja ne postoji u bazi!", "Greska!");
+                tbBoja.Text = "";
+                con.Close();
+                return;
+            }
+           
+            
+            con.Close();
+            cmd = new OleDbCommand("SELECT GorivoID FROM GORIVO WHERE Naziv='" + tbGorivo.Text + "'", con);
+            con.Open();
+            rider = cmd.ExecuteReader();
+            rider.Read();
+            try
+            {
+                gorivo = Int32.Parse(rider[0].ToString());
+            }
+
+            catch
+            {
+                MessageBox.Show("Ova vrsta goriva ne postoji u bazi!", "Greska!");
+                tbGorivo.Text = "";
+                con.Close();
+                return;
+            }
+            
+            
+            con.Close();
+            if (koliko > 2)
+            {
+                cmd = new OleDbCommand("SELECT Registracija, PredjenoKM FROM VOZILO WHERE ModelID=" + model + " AND BojaID=" + boja + " AND GorivoID=" + gorivo + "AND [Godina Proizvodnje] "+godina[1]+";", con);
+            }
+            else
+            {
+                cmd = new OleDbCommand("SELECT Registracija, PredjenoKM FROM VOZILO WHERE ModelID=" + model + " AND BojaID=" + boja + " AND GorivoID=" + gorivo + "AND [Godina Proizvodnje] BETWEEN " + godina[0] + " AND "+godina[2], con);
+            }
+            con.Open();
+            int i = 0;
+            rider = cmd.ExecuteReader();
+            if (rider.HasRows)
+            {
+                while (rider.Read())
+                {
+                    DataGridViewRow row = (DataGridViewRow)dataGridView1.Rows[i].Clone();
+                    row.Cells[0].Value = rider[0].ToString();
+                    row.Cells[1].Value = rider[1].ToString();
+                    dataGridView1.Rows.Add(row);
+                    i++;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nema poklapanja!", "Obavestenje!");
+            }
+            con.Close();
+            
+        }
