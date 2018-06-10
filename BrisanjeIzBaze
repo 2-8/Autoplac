@@ -1,0 +1,25 @@
+private void bBrisi_Click(object sender, EventArgs e)
+        {
+            int id = Int32.Parse(tbSifra.Text);
+            cmd = new OleDbCommand("DELETE FROM GORIVO WHERE GorivoID=" + id + ";", con);
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                MessageBox.Show("Doslo je do greske pri brisanju iz baze!", "Greska", MessageBoxButtons.OK);
+                con.Close();
+                tbNaziv.Text = "";
+                tbOpis.Text = "";
+                return;
+            }
+            con.Close();
+            MessageBox.Show("Uspesno brisanje!", "Obavestenje", MessageBoxButtons.OK);
+            tbNaziv.Text = "";
+            tbSifra.Text = "";
+            tbOpis.Text = "";
+            listView1.Items.Clear();
+            PopuniLV();
+        }
