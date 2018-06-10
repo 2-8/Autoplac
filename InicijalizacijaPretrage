@@ -9,3 +9,51 @@ OleDbConnection con;
             AppDomain.CurrentDomain.SetData("DataDirectory", putanjaBaze[0]);
             con = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=|DataDirectory|\B31Autoplac.accdb");
         }
+        
+        private void frmPoProiz_Load(object sender, EventArgs e)
+        {
+            cmd = new OleDbCommand("SELECT Naziv FROM PROIZVODJAC ORDER BY Naziv ASC;", con);
+            con.Open();
+            rider = cmd.ExecuteReader();
+            while (rider.Read())
+            {
+                cbProizvodjac.Items.Add(rider[0].ToString());
+            }
+            con.Close();
+
+            cmd = new OleDbCommand("SELECT Naziv FROM BOJA ORDER BY Naziv ASC;", con);
+            con.Open();
+            rider = cmd.ExecuteReader();
+            while (rider.Read())
+            {
+                cbBoja.Items.Add(rider[0].ToString());
+            }
+            con.Close();
+
+            cmd = new OleDbCommand("SELECT Naziv FROM GORIVO ORDER BY Naziv ASC;", con);
+            con.Open();
+            rider = cmd.ExecuteReader();
+            while (rider.Read())
+            {
+                cbGorivo.Items.Add(rider[0].ToString());
+            }
+            con.Close();
+
+
+
+
+
+            cbKilometraza.Items.Add("0 – 30000 km");
+            cbKilometraza.Items.Add("30001 – 60000 km");
+            cbKilometraza.Items.Add("60001 – 90000 km");
+            cbKilometraza.Items.Add("90001 – 120000 km");
+            cbKilometraza.Items.Add("120001 – 150000 km");
+            cbKilometraza.Items.Add("150001 – 180000 km");
+            cbKilometraza.Items.Add("180001 – 210000 km");
+            cbKilometraza.Items.Add("preko 210000 km");
+            cbKilometraza.Text = "Izaberite kilometrazu:";
+            cbProizvodjac.Text = "Izaberite proizvodjaca:";
+            cbBoja.Text = "Izaberite boju:";
+            cbGorivo.Text = "Izaberite vrstu goriva:";
+
+        }
