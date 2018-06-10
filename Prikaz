@@ -1,0 +1,82 @@
+private void bPrikaz_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Rows.Clear();
+            string[] kilometri = new string[10];
+            if (cbKilometraza.Text != "Izaberite kilometrazu:" && cbProizvodjac.Text != "Izaberite proizvodjaca:" && cbBoja.Text != "Izaberite boju:" && cbGorivo.Text != "Izaberite vrstu goriva:")
+            {
+                int BojaID;
+                int GorivoID;
+                int KM1;
+                int KM2;
+                cmd = new OleDbCommand("SELECT BojaID FROM BOJA WHERE Naziv=@Naziv", con);
+                cmd.Parameters.AddWithValue("@Naziv", cbBoja.Text);
+                con.Open();
+                rider = cmd.ExecuteReader();
+                rider.Read();
+                BojaID = Int32.Parse(rider[0].ToString());
+                con.Close();
+                cmd = new OleDbCommand("SELECT GorivoID FROM GORIVO WHERE Naziv=@Naziv", con);
+                cmd.Parameters.AddWithValue("@Naziv", cbGorivo.Text);
+                con.Open();
+                rider = cmd.ExecuteReader();
+                rider.Read();
+                GorivoID = Int32.Parse(rider[0].ToString());
+                con.Close();
+
+                if (cbKilometraza.Text == "preko 210000 km")
+                {
+                    kilometri = cbKilometraza.Text.Split(' ');
+                    KM1 = Int32.Parse(kilometri[1]);
+                    KM2 = 0;
+                }
+
+                else
+                {
+                    kilometri = cbKilometraza.Text.Split(' ');
+                    KM1 = Int32.Parse(kilometri[0]);
+                    KM2 = Int32.Parse(kilometri[2]);
+                }
+                if (KM2 != 0)
+                {
+                    cmd = new OleDbCommand("SELECT VOZILO.Registracija, [VOZILO].[Godina Proizvodnje] FROM VOZILO INNER JOIN (MODEL INNER JOIN PROIZVODJAC ON MODEL.ProizvodjacID=PROIZVODJAC.ProizvodjacID)ON VOZILO.ModelID=MODEL.ModelID WHERE PROIZVODJAC.Naziv=@ProizvodjacNaz AND VOZILO.BojaID=@BojaID AND VOZILO.GorivoID=@GorivoID AND VOZILO.PredjenoKM BETWEEN @KM1 AND @KM2;", con);
+                    cmd.Parameters.AddWithValue("@ProizvodjacNaz", cbProizvodjac.Text);
+                    cmd.Parameters.AddWithValue("@BojaID", BojaID);
+                    cmd.Parameters.AddWithValue("@GorivoID", GorivoID);
+                    cmd.Parameters.AddWithValue("@KM1", KM1);
+                    cmd.Parameters.AddWithValue("@KM2", KM2);
+                }
+                else
+                {
+                    cmd = new OleDbCommand("SELECT VOZILO.Registracija, [VOZILO].[Godina Proizvodnje] FROM VOZILO INNER JOIN (MODEL INNER JOIN PROIZVODJAC ON MODEL.ProizvodjacID=PROIZVODJAC.ProizvodjacID)ON VOZILO.ModelID=MODEL.ModelID WHERE PROIZVODJAC.Naziv=@ProizvodjacNaz AND VOZILO.BojaID=@BojaID AND VOZILO.GorivoID=@GorivoID AND VOZILO.PredjenoKM>@KM1;", con);
+                    cmd.Parameters.AddWithValue("@ProizvodjacNaz", cbProizvodjac.Text);
+                    cmd.Parameters.AddWithValue("@BojaID", BojaID);
+                    cmd.Parameters.AddWithValue("@GorivoID", GorivoID);
+                    cmd.Parameters.AddWithValue("@KM1", KM1);
+                }
+                con.Open();
+                rider=cmd.ExecuteReader();
+                if (rider.HasRows)
+                {
+                    int i = 0;
+                    
+                    while (rider.Read())
+                    {
+                        DataGridViewRow row = (DataGridViewRow)dataGridView1.Rows[i].Clone();
+                        row.Cells[0].Value = rider[0].ToString();
+                        row.Cells[1].Value = rider[1].ToString();
+                        dataGridView1.Rows.Add(row);
+                        i++;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Nema poklapanja!", "Obavestenje!");
+                }
+                con.Close();
+            }
+            else
+            {
+                MessageBox.Show("Odaberite parametre!", "Obavestenje!");
+            }
+
+        }
