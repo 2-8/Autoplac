@@ -1,0 +1,28 @@
+
+//
+/*Function for list view filling*/
+//
+
+private void PopuniLV()
+        {
+            cmd = new OleDbCommand("SELECT * FROM GORIVO ORDER BY GorivoID ASC", con);
+            con.Open();
+            int i = 0;
+            rider = cmd.ExecuteReader();
+            while (rider.Read())
+            {
+                listView1.Items.Add(rider[0].ToString());
+                listView1.Items[i].SubItems.Add(rider[1].ToString());
+                listView1.Items[i].SubItems.Add(rider[2].ToString());
+                i++;
+            }
+            con.Close();
+        }
+//    
+/*Take fuction call*/
+//
+
+private void frmGorivoUnos_Load(object sender, EventArgs e)
+        {
+            PopuniLV();
+        }
