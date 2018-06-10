@@ -1,0 +1,55 @@
+
+private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            int id;
+            if (tbSifra.Text != "")
+            {
+                try { id = Int32.Parse(tbSifra.Text); }
+                catch
+                {
+                    MessageBox.Show("Sifra mora biti broj, veci od nula!", "Greska!");
+                    tbSifra.Text = "";
+                    return;
+                }
+                if (!(id > 0))
+                {
+                    tbSifra.Text = "";
+                    tbNaziv.Text = "";
+                    tbOpis.Text = "";
+                    bIzmena.Enabled = false;
+                    bUpis.Enabled = false;
+                    bBrisi.Enabled = false;
+                    return;
+                }
+                cmd = new OleDbCommand("SELECT * FROM GORIVO WHERE GorivoID=" + id, con);
+                con.Open();
+                rider = cmd.ExecuteReader();
+                if (rider.HasRows)
+                {
+                    rider.Read();
+                    tbNaziv.Text = rider[1].ToString();
+                    tbOpis.Text = rider[2].ToString();
+                    bIzmena.Enabled = true;
+                    bUpis.Enabled = false;
+                    bBrisi.Enabled = true;
+                }
+                else
+                {
+                    tbNaziv.Text = "";
+                    tbOpis.Text = "";
+                    bIzmena.Enabled = false;
+                    bUpis.Enabled = true;
+                    bBrisi.Enabled = false;
+                }
+
+                con.Close();
+            }
+            else
+            {
+                tbNaziv.Text = "";
+                tbOpis.Text = "";
+                bIzmena.Enabled = false;
+                bUpis.Enabled = false;
+                bBrisi.Enabled = false;
+            }
+        }
